@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+@import "@fontsource-variable/inter/index.css";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+    --font-sans:
+        "Inter Variable", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+
+    --color-canvas: var(--canvas);
+    --color-surface: var(--surface);
+    --color-surface-muted: var(--surface-muted);
+    --color-surface-hover: var(--surface-hover);
+    --color-overlay: var(--overlay);
+
+    --color-border: var(--border);
+    --color-border-strong: var(--border-strong);
+
+    --color-content: var(--content);
+    --color-content-muted: var(--content-muted);
+    --color-content-subtle: var(--content-subtle);
+    --color-content-inverted: var(--content-inverted);
+
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-soft: var(--primary-soft);
+    --color-primary-content: var(--primary-content);
+
+    --color-success: var(--success);
+    --color-success-soft: var(--success-soft);
+    --color-warning: var(--warning);
+    --color-warning-soft: var(--warning-soft);
+    --color-danger: var(--danger);
+    --color-danger-hover: var(--danger-hover);
+    --color-danger-soft: var(--danger-soft);
+    --color-info: var(--info);
+    --color-info-soft: var(--info-soft);
+    --color-muted: var(--content-muted);
+
+    --color-bubble-in: var(--bubble-in);
+    --color-bubble-out: var(--bubble-out);
+
+    --radius-card: 0.75rem;
+    --radius-control: 0.5rem;
+}
+
+:root {
+    --canvas: oklch(0.98 0.003 265);
+    --surface: oklch(1 0 0);
+    --surface-muted: oklch(0.968 0.004 265);
+    --surface-hover: oklch(0.945 0.006 265);
+    --overlay: oklch(0.22 0.02 265 / 0.45);
+
+    --border: oklch(0.913 0.006 265);
+    --border-strong: oklch(0.84 0.008 265);
+
+    --content: oklch(0.23 0.017 265);
+    --content-muted: oklch(0.53 0.014 265);
+    --content-subtle: oklch(0.66 0.012 265);
+    --content-inverted: oklch(0.99 0 0);
+
+    --primary: oklch(0.56 0.198 274);
+    --primary-hover: oklch(0.5 0.198 274);
+    --primary-soft: oklch(0.95 0.03 274);
+    --primary-content: oklch(0.99 0 0);
+
+    --success: oklch(0.62 0.15 155);
+    --success-soft: oklch(0.95 0.045 155);
+    --warning: oklch(0.72 0.15 75);
+    --warning-soft: oklch(0.96 0.05 85);
+    --danger: oklch(0.58 0.2 22);
+    --danger-hover: oklch(0.52 0.2 22);
+    --danger-soft: oklch(0.95 0.04 22);
+    --info: oklch(0.62 0.14 245);
+    --info-soft: oklch(0.95 0.04 245);
+
+    --bubble-in: oklch(1 0 0);
+    --bubble-out: oklch(0.95 0.03 274);
+
+    color-scheme: light;
+}
+
+.dark {
+    --canvas: oklch(0.17 0.012 265);
+    --surface: oklch(0.213 0.014 265);
+    --surface-muted: oklch(0.245 0.016 265);
+    --surface-hover: oklch(0.283 0.018 265);
+    --overlay: oklch(0.12 0.01 265 / 0.6);
+
+    --border: oklch(0.3 0.016 265);
+    --border-strong: oklch(0.38 0.018 265);
+
+    --content: oklch(0.96 0.004 265);
+    --content-muted: oklch(0.72 0.012 265);
+    --content-subtle: oklch(0.58 0.014 265);
+    --content-inverted: oklch(0.2 0.014 265);
+
+    --primary: oklch(0.66 0.17 274);
+    --primary-hover: oklch(0.72 0.17 274);
+    --primary-soft: oklch(0.31 0.07 274);
+    --primary-content: oklch(0.15 0.01 274);
+
+    --success: oklch(0.72 0.14 155);
+    --success-soft: oklch(0.3 0.06 155);
+    --warning: oklch(0.79 0.14 80);
+    --warning-soft: oklch(0.32 0.06 80);
+    --danger: oklch(0.68 0.17 22);
+    --danger-hover: oklch(0.73 0.17 22);
+    --danger-soft: oklch(0.32 0.07 22);
+    --info: oklch(0.7 0.13 245);
+    --info-soft: oklch(0.3 0.06 245);
+
+    --bubble-in: oklch(0.245 0.016 265);
+    --bubble-out: oklch(0.32 0.07 274);
+
+    color-scheme: dark;
+}
+
+@layer base {
+    * {
+        border-color: var(--color-border);
+    }
+
+    html {
+        background-color: var(--color-canvas);
+    }
+
+    body {
+        background-color: var(--color-canvas);
+        color: var(--color-content);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+        background-color: var(--color-primary-soft);
+    }
+}
+
+@layer components {
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border-strong) transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background-color: var(--color-border-strong);
+        border-radius: 9999px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}
