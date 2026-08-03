@@ -1031,7 +1031,7 @@ usePrivateChannel(
                             <ThreadMarker
                                 v-if="item.kind !== 'message'"
                                 :kind="item.kind"
-                                :label="Item.label"
+                                :label="item.label"
                                 :at="item.at"
                             />
                             <MessageBubble
