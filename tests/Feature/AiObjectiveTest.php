@@ -208,7 +208,7 @@ it('transcribes each audio only once', function (): void {
     expect($transcriber->calls)->toBe(1);
 });
 
-it('asks the model to announce every action', function (): void {
+it('asks the model to announce and act in the same response', function (): void {
     Queue::fake();
     tenant();
 
@@ -216,7 +216,9 @@ it('asks the model to announce every action', function (): void {
 
     app(HandleAiTurn::class)->handle(conversationWithObjective());
 
-    expect($provider->requests[0]->systemPrompt)->toContain('Antes de usar qualquer ferramenta');
+    expect($provider->requests[0]->systemPrompt)
+        ->toContain('na mesma resposta')
+        ->toContain('Uma resposta só de texto não executa nada');
 });
 
 it('carries the tool calls into the next round', function (): void {

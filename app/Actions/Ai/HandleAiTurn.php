@@ -24,9 +24,13 @@ use App\Services\Ai\ToolRegistry;
 
 class HandleAiTurn
 {
-    private const MAX_TOOL_ROUNDS = 3;
+    private const MAX_TOOL_ROUNDS = 4;
 
     private const HISTORY_SIZE = 30;
+
+    private const ACTION_REMINDER = 'Sua última mensagem prometeu uma ação ao contato, mas nenhuma ferramenta foi chamada, então nada aconteceu de fato. Se a ação é necessária, chame a ferramenta agora. Não escreva outra mensagem: o contato já recebeu a anterior e qualquer texto seu neste momento será descartado. Se nenhuma ação era necessária, responda apenas "ok".';
+
+    private const ACTION_PROMISE = '/\b(?:vou|irei|vamos)\s+(?:te\s+|lhe\s+)?(?:transferir|encaminhar|passar|repassar|direcionar|chamar|acionar|encerrar|finalizar|registrar|anotar|marcar|fazer)\b|\bum\s+momento\b|\bum\s+instante\b|\bagora\s+mesmo\b|\baguarde\b|\bestou\s+(?:transferindo|encaminhando|passando|encerrando|finalizando|registrando|acionando)\b/iu';
 
     public function __construct(
         private readonly AiManager $ai,
@@ -52,14 +56,30 @@ class HandleAiTurn
 
         $tools = $this->tools->resolve($objective->tools ?? []);
         $messages = $this->history($conversation);
+        $reminded = false;
+        $silent = false;
 
         for ($round = 0; $round < self::MAX_TOOL_ROUNDS; $round++) {
             $response = $this->ask($conversation, $objective, $messages, $tools);
 
-            $this->reply($conversation, $response);
+            if (! $silent) {
+                $this->reply($conversation, $response);
+            }
+
+            $silent = false;
 
             if (! $response->hasToolCalls()) {
-                return;
+                if ($reminded || $tools === [] || ! $this->promisedAction($response)) {
+                    return;
+                }
+
+                $reminded = true;
+                $silent = true;
+
+                $messages[] = AiMessage::assistant((string) $response->content);
+                $messages[] = AiMessage::user(self::ACTION_REMINDER);
+
+                continue;
             }
 
             $messages[] = AiMessage::assistant($response->content ?? '', $response->toolCalls);
@@ -119,6 +139,12 @@ class HandleAiTurn
             body: $response->content,
             source: MessageSource::Ai,
         );
+    }
+
+    private function promisedAction(AiResponse $response): bool
+    {
+        return filled($response->content)
+            && preg_match(self::ACTION_PROMISE, (string) $response->content) === 1;
     }
 
     /**
@@ -182,7 +208,7 @@ class HandleAiTurn
 
         return implode("\n\n", array_filter([
             $objective->system_prompt,
-            'Antes de usar qualquer ferramenta, escreva uma frase curta dizendo ao contato o que você vai fazer. A ação acontece depois dessa frase.',
+            'Quando for usar uma ferramenta, envie a frase para o contato e a chamada da ferramenta na mesma resposta. Uma resposta só de texto não executa nada: se você avisar que vai transferir, encerrar ou registrar e não chamar a ferramenta junto, nada acontece e o contato fica esperando por algo que nunca vem. Nunca prometa fazer depois, nunca peça um momento antes de agir e nunca narre na mensagem que está acionando ferramentas.',
             'Você só enxerga texto. Áudios chegam prontos, marcados com [áudio transcrito]: trate o conteúdo como se o contato tivesse escrito. Imagens, vídeos e documentos chegam apenas pelo nome do tipo, então nunca prometa analisá-los — peça ao contato que escreva o que precisa.',
             "Canal do atendimento: {$conversation->channel->label()}.",
             "Nome do contato: {$contact->name}.",

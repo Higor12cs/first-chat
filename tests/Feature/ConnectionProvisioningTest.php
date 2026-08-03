@@ -30,7 +30,11 @@ it('gives a new tenant the connections it contracted', function (): void {
         maxConnections: 3,
     );
 
-    $connections = ChannelConnection::query()->acrossTenants()->where('tenant_id', $tenant->id)->get();
+    $connections = ChannelConnection::query()
+        ->acrossTenants()
+        ->where('tenant_id', $tenant->id)
+        ->orderBy('id')
+        ->get();
 
     expect($connections)->toHaveCount(3)
         ->and($connections->pluck('channel')->unique()->all())->toBe([Channel::WhatsApp])

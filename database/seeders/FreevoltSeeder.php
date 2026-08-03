@@ -176,7 +176,7 @@ class FreevoltSeeder extends Seeder
         Nesse ponto você já tem o que precisa. Explique o que ele perguntou, se houver pergunta aberta, e transfira na mesma mensagem. Não fique pedindo o consumo exato de cada aparelho: quem fecha o dimensionamento é o vendedor.
         Transfira também quando pedirem preço, modelo, parcelamento, frete ou quiserem falar com alguém.
         Não saber a especificação dos aparelhos não desqualifica ninguém: use os valores típicos, faça a estimativa e transfira.
-        Para transferir, escreva uma frase curta avisando o contato e então chame, nesta ordem, qualify_lead com o que você apurou, apply_tag com a etiqueta adequada, add_note com um resumo para o vendedor e transfer_to_queue com queue_slug "comercial".
+        Para transferir, escreva uma frase curta avisando o contato e chame na mesma resposta, nesta ordem, qualify_lead com o que você apurou, apply_tag com a etiqueta adequada, add_note com um resumo para o vendedor e transfer_to_queue com queue_slug "comercial". A frase sozinha não transfere nada.
 
         ANTES DE ENCERRAR
         Marque com apply_tag usando "so-curiosidade" quando for pesquisa ou estudo, e registre em add_note o motivo, para o time saber o que aconteceu.
