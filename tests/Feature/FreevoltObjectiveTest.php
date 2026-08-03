@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Ai\Tools\ApplyTagTool;
 use App\Models\AiObjective;
 use App\Models\ServiceQueue;
 use App\Models\Tag;
@@ -32,14 +33,17 @@ it('points the transfer at a queue that exists', function (): void {
         ->and(ServiceQueue::query()->where('slug', 'comercial')->exists())->toBeTrue();
 });
 
-it('offers only tags the tenant actually has', function (): void {
+it('leaves the tag catalog to the platform instead of hardcoding it in the prompt', function (): void {
     $slugs = ['pronto-para-comprar', 'comparando-preco', 'so-curiosidade', 'uso-em-camping', 'energia-de-emergencia'];
 
-    foreach ($slugs as $slug) {
-        expect($this->objective->system_prompt)->toContain($slug);
-    }
+    expect(Tag::query()->whereIn('slug', $slugs)->count())->toBe(count($slugs))
+        ->and($this->objective->tools)->toContain('apply_tag');
 
-    expect(Tag::query()->whereIn('slug', $slugs)->count())->toBe(count($slugs));
+    $catalog = app(ApplyTagTool::class)->schema()['properties']['tag_slug']['enum'];
+
+    foreach ($slugs as $slug) {
+        expect($catalog)->toContain($slug);
+    }
 });
 
 it('tells the sdr that announcing a close does not close anything', function (): void {

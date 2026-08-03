@@ -16,6 +16,8 @@ use App\Models\AiInteraction;
 use App\Models\AiObjective;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\ServiceQueue;
+use App\Models\Tag;
 use App\Services\Ai\AiCostCalculator;
 use App\Services\Ai\AiManager;
 use App\Services\Ai\ToolRegistry;
@@ -184,10 +186,74 @@ class HandleAiTurn
             'Você só enxerga texto. Áudios chegam prontos, marcados com [áudio transcrito]: trate o conteúdo como se o contato tivesse escrito. Imagens, vídeos e documentos chegam apenas pelo nome do tipo, então nunca prometa analisá-los — peça ao contato que escreva o que precisa.',
             "Canal do atendimento: {$conversation->channel->label()}.",
             "Nome do contato: {$contact->name}.",
+            $this->queueCatalog($objective),
+            $this->handoffNote($objective),
+            $this->tagCatalog($objective),
             $objective->closing_condition
                 ? "Condição de encerramento: {$objective->closing_condition}"
                 : null,
         ]));
+    }
+
+    private function queueCatalog(AiObjective $objective): ?string
+    {
+        if (! $this->uses($objective, 'transfer_to_queue')) {
+            return null;
+        }
+
+        $queues = ServiceQueue::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (ServiceQueue $queue): string => trim(
+                "- {$queue->slug}: {$queue->name}".(filled($queue->description) ? " — {$queue->description}" : '')
+            ));
+
+        if ($queues->isEmpty()) {
+            return 'Não há setores disponíveis para transferência. Resolva o atendimento você mesmo ou encaminhe para um atendente.';
+        }
+
+        return "Setores disponíveis para transferência. Use o identificador exato antes dos dois pontos no campo queue_slug de transfer_to_queue:\n"
+            .$queues->implode("\n");
+    }
+
+    private function handoffNote(AiObjective $objective): ?string
+    {
+        if (! $this->uses($objective, 'request_human')) {
+            return null;
+        }
+
+        $queue = $objective->handoffServiceQueue;
+
+        return $queue === null
+            ? 'request_human coloca o atendimento na fila de espera geral.'
+            : "request_human coloca o atendimento no setor {$queue->name}. Para qualquer outro setor use transfer_to_queue.";
+    }
+
+    private function tagCatalog(AiObjective $objective): ?string
+    {
+        if (! $this->uses($objective, 'apply_tag')) {
+            return null;
+        }
+
+        $tags = Tag::query()
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Tag $tag): string => trim(
+                "- {$tag->slug}: {$tag->name}".(filled($tag->description) ? " — {$tag->description}" : '')
+            ));
+
+        if ($tags->isEmpty()) {
+            return 'Não há tags cadastradas. Não use apply_tag.';
+        }
+
+        return "Tags disponíveis. Use o identificador exato antes dos dois pontos no campo tag_slug de apply_tag, nunca invente um:\n"
+            .$tags->implode("\n");
+    }
+
+    private function uses(AiObjective $objective, string $tool): bool
+    {
+        return in_array($tool, $objective->tools ?? [], true);
     }
 
     private function canContinue(Conversation $conversation, AiObjective $objective): bool

@@ -178,9 +178,6 @@ class FreevoltSeeder extends Seeder
         Não saber a especificação dos aparelhos não desqualifica ninguém: use os valores típicos, faça a estimativa e transfira.
         Para transferir, escreva uma frase curta avisando o contato e então chame, nesta ordem, qualify_lead com o que você apurou, apply_tag com a etiqueta adequada, add_note com um resumo para o vendedor e transfer_to_queue com queue_slug "comercial".
 
-        ETIQUETAS DISPONÍVEIS
-        Use apply_tag com um destes tag_slug: "pronto-para-comprar", "comparando-preco", "so-curiosidade", "uso-em-camping", "energia-de-emergencia".
-
         ANTES DE ENCERRAR
         Marque com apply_tag usando "so-curiosidade" quando for pesquisa ou estudo, e registre em add_note o motivo, para o time saber o que aconteceu.
         TXT;

@@ -7,6 +7,7 @@ use App\Domain\Conversations\Enums\ConversationStatus;
 use App\Models\Conversation;
 use App\Models\ServiceQueue;
 use App\Services\Conversations\ConversationRouter;
+use Illuminate\Support\Collection;
 
 class TransferToQueueTool implements AiTool
 {
@@ -32,7 +33,7 @@ class TransferToQueueTool implements AiTool
      */
     public function schema(): array
     {
-        $queues = ServiceQueue::query()->where('is_active', true)->orderBy('name')->get();
+        $queues = $this->available();
 
         $destination = ['type' => 'string', 'description' => 'Identificador da fila de destino.'];
 
@@ -58,10 +59,21 @@ class TransferToQueueTool implements AiTool
      */
     public function execute(Conversation $conversation, array $arguments): string
     {
-        $queue = ServiceQueue::query()->where('slug', $arguments['queue_slug'] ?? '')->first();
+        $queue = ServiceQueue::query()
+            ->where('is_active', true)
+            ->where('slug', $arguments['queue_slug'] ?? '')
+            ->first();
 
         if ($queue === null) {
-            return 'Setor não encontrado. Continue o atendimento normalmente.';
+            $options = $this->available()->pluck('slug');
+
+            return $options->isEmpty()
+                ? 'Nenhum setor está disponível para transferência. Siga o atendimento ou encaminhe para um atendente.'
+                : 'Setor não encontrado. Use um destes identificadores: '.$options->implode(', ').'.';
+        }
+
+        if ($queue->ai_objective_id !== null && $queue->ai_objective_id === $conversation->ai_objective_id) {
+            return "O setor {$queue->name} é atendido por você mesmo. Para falar com uma pessoa use request_human.";
         }
 
         $conversation->forceFill([
@@ -72,5 +84,13 @@ class TransferToQueueTool implements AiTool
         $this->router->moveToQueue($conversation, $queue);
 
         return "Atendimento transferido para a fila {$queue->name}.";
+    }
+
+    /**
+     * @return Collection<int, ServiceQueue>
+     */
+    private function available(): Collection
+    {
+        return ServiceQueue::query()->where('is_active', true)->orderBy('name')->get();
     }
 }
