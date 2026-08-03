@@ -15,7 +15,7 @@ class ReconcileWhatsAppConnections extends Command
 
     protected $description = 'Reconcile provider instances with stored connections, flagging (or pruning) orphans so they stop being billed';
 
-    private const MIN_AGE_MINUTES = 0;
+    private const MIN_AGE_MINUTES = 30;
 
     public function handle(UazapiAdminClient $admin, TenantContext $context): int
     {
