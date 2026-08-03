@@ -7,6 +7,7 @@ use App\Models\AiInteraction;
 use App\Models\AiObjective;
 use App\Models\Conversation;
 use App\Models\Tenant;
+use App\Services\Ai\AiCostCalculator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,7 +29,7 @@ class AiInteractionFactory extends Factory
             'status' => 'completed',
             'input_tokens' => fake()->numberBetween(100, 2000),
             'output_tokens' => fake()->numberBetween(50, 800),
-            'cost_cents' => fake()->numberBetween(0, 10),
+            'cost_micro_cents' => fake()->numberBetween(0, 10 * AiCostCalculator::MICRO_CENTS_PER_CENT),
             'latency_ms' => fake()->numberBetween(200, 4000),
         ];
     }

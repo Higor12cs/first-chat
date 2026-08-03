@@ -27,7 +27,7 @@ class ReportController extends Controller
                 'closed' => Conversation::query()->whereBetween('closed_at', [$from, $to])->count(),
                 'messages_in' => Message::query()->whereBetween('created_at', [$from, $to])->where('direction', 'inbound')->count(),
                 'messages_out' => Message::query()->whereBetween('created_at', [$from, $to])->where('direction', 'outbound')->count(),
-                'ai_cost_cents' => (int) AiInteraction::query()->whereBetween('created_at', [$from, $to])->sum('cost_cents'),
+                'ai_cost_micro_cents' => (int) AiInteraction::query()->whereBetween('created_at', [$from, $to])->sum('cost_micro_cents'),
                 'first_response_minutes' => $this->averageFirstResponseMinutes($from, $to),
             ],
             'by_day' => $this->conversationsByDay($from, $to),

@@ -17,7 +17,7 @@ import Chart from "../Components/UI/Chart.vue";
 import Badge from "../Components/UI/Badge.vue";
 import Avatar from "../Components/UI/Avatar.vue";
 import EmptyState from "../Components/UI/EmptyState.vue";
-import { formatRelative, formatUsdCents } from "../Utils/format";
+import { formatRelative, formatUsdMicroCents } from "../Utils/format";
 
 const props = defineProps({
     metrics: { type: Object, required: true },
@@ -190,7 +190,7 @@ const shortcuts = [
                 description="Consumo acumulado dos objetivos ativos."
             >
                 <p class="text-3xl font-semibold text-content">
-                    {{ formatUsdCents(metrics.ai_cost_month_cents) }}
+                    {{ formatUsdMicroCents(metrics.ai_cost_month_micro_cents) }}
                 </p>
                 <p class="mt-1 text-xs text-content-muted">
                     Some limites por objetivo para controlar o gasto.

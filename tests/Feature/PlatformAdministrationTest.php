@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\ServiceQueue;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\Ai\AiCostCalculator;
 
 beforeEach(function (): void {
     $this->admin = User::factory()->superAdmin()->create();
@@ -138,7 +139,7 @@ it('reports message and token usage per tenant', function (): void {
         'conversation_id' => $conversation->id,
         'input_tokens' => 1200,
         'output_tokens' => 300,
-        'cost_cents' => 9,
+        'cost_micro_cents' => 9 * AiCostCalculator::MICRO_CENTS_PER_CENT,
     ]);
 
     $this->actingAs($this->admin)
@@ -149,7 +150,7 @@ it('reports message and token usage per tenant', function (): void {
             ->where('totals.messages_out', 1)
             ->where('totals.input_tokens', 1200)
             ->where('totals.output_tokens', 300)
-            ->where('totals.ai_cost_cents', 9)
+            ->where('totals.ai_cost_micro_cents', 9 * AiCostCalculator::MICRO_CENTS_PER_CENT)
             ->where('rows.0.name', $tenant->name));
 });
 

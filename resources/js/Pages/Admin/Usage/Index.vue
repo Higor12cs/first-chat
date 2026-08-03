@@ -10,7 +10,7 @@ import FormField from "../../../Components/UI/FormField.vue";
 import TextInput from "../../../Components/UI/TextInput.vue";
 import Badge from "../../../Components/UI/Badge.vue";
 import EmptyState from "../../../Components/UI/EmptyState.vue";
-import { formatUsdCents } from "../../../Utils/format";
+import { formatUsdCents, formatUsdMicroCents } from "../../../Utils/format";
 
 const props = defineProps({
     rows: { type: Array, default: () => [] },
@@ -42,7 +42,7 @@ const cards = computed(() => [
     { label: "Tokens de Entrada", value: number(props.totals.input_tokens) },
     { label: "Tokens de Saída", value: number(props.totals.output_tokens) },
     { label: "Atendimentos", value: number(props.totals.conversations) },
-    { label: "Custo de IA", value: formatUsdCents(props.totals.ai_cost_cents) },
+    { label: "Custo de IA", value: formatUsdMicroCents(props.totals.ai_cost_micro_cents) },
 ]);
 
 function number(value) {
@@ -142,12 +142,16 @@ const hasMessages = computed(() => busiest.value.some((row) => row.messages_tota
                     <span class="flex items-center justify-end gap-2">
                         <Badge
                             v-if="row.max_monthly_ai_cost_cents"
-                            :color="row.ai_cost_cents >= row.max_monthly_ai_cost_cents ? 'danger' : 'muted'"
+                            :color="
+                                row.ai_cost_micro_cents >= row.max_monthly_ai_cost_cents * 1_000_000
+                                    ? 'danger'
+                                    : 'muted'
+                            "
                             size="sm"
                         >
                             limite {{ formatUsdCents(row.max_monthly_ai_cost_cents) }}
                         </Badge>
-                        <span class="text-sm text-content">{{ formatUsdCents(row.ai_cost_cents) }}</span>
+                        <span class="text-sm text-content">{{ formatUsdMicroCents(row.ai_cost_micro_cents) }}</span>
                     </span>
                 </template>
 

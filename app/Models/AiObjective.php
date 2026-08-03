@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToTenant;
+use App\Services\Ai\AiCostCalculator;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,14 +42,15 @@ class AiObjective extends Model
         return $this->hasMany(AiInteraction::class);
     }
 
-    public function spentCents(): int
+    public function spentMicroCents(): int
     {
-        return (int) $this->interactions()->sum('cost_cents');
+        return (int) $this->interactions()->sum('cost_micro_cents');
     }
 
     public function hasBudgetLeft(): bool
     {
-        return $this->cost_limit_cents === null || $this->spentCents() < $this->cost_limit_cents;
+        return $this->cost_limit_cents === null
+            || $this->spentMicroCents() < $this->cost_limit_cents * AiCostCalculator::MICRO_CENTS_PER_CENT;
     }
 
     /**

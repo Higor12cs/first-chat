@@ -8,7 +8,7 @@ import Badge from "../../Components/UI/Badge.vue";
 import { Pencil, Plus, Sparkles, Trash2 } from "lucide-vue-next";
 import EmptyState from "../../Components/UI/EmptyState.vue";
 import ConfirmDialog from "../../Components/UI/ConfirmDialog.vue";
-import { formatUsdCents } from "../../Utils/format";
+import { formatUsdCents, formatUsdMicroCents } from "../../Utils/format";
 import { usePermissions } from "../../Composables/usePermissions";
 
 defineProps({
@@ -33,7 +33,9 @@ function budgetPercent(objective) {
     return Math.min(
         100,
         Math.round(
-            ((objective.spent_cents ?? 0) / objective.cost_limit_cents) * 100,
+            ((objective.spent_micro_cents ?? 0) /
+                (objective.cost_limit_cents * 1_000_000)) *
+                100,
         ),
     );
 }
@@ -123,7 +125,7 @@ function budgetPercent(objective) {
                     >
                         <span>Consumo</span>
                         <span
-                            >{{ formatUsdCents(objective.spent_cents ?? 0) }} de
+                            >{{ formatUsdMicroCents(objective.spent_micro_cents ?? 0) }} de
                             {{ formatUsdCents(objective.cost_limit_cents) }}</span
                         >
                     </div>

@@ -2,6 +2,12 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: 
 const timeFormatter = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });
 const currencyFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const usdFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "USD" });
+const usdPreciseFormatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+});
 
 export function formatDate(value) {
     return value ? dateFormatter.format(new Date(value)) : "";
@@ -25,6 +31,15 @@ export function formatCents(cents) {
  */
 export function formatUsdCents(cents) {
     return usdFormatter.format((cents ?? 0) / 100);
+}
+
+/**
+ * Uma rodada de IA custa uma fração de centavo, então o custo é gravado em
+ * milionésimos de centavo para não arredondar antes de somar. Valores pequenos
+ * ganham até quatro casas para não virarem zero na tela.
+ */
+export function formatUsdMicroCents(microCents) {
+    return usdPreciseFormatter.format((microCents ?? 0) / 100_000_000);
 }
 
 export function formatRelative(value, now = Date.now()) {

@@ -11,6 +11,7 @@ import TextArea from "../../Components/UI/TextArea.vue";
 import SelectInput from "../../Components/UI/SelectInput.vue";
 import Toggle from "../../Components/UI/Toggle.vue";
 import Badge from "../../Components/UI/Badge.vue";
+import { formatUsdMicroCents } from "../../Utils/format";
 
 const props = defineProps({
     objective: { type: Object, default: null },
@@ -195,7 +196,7 @@ function submit() {
                 </Card>
 
                 <Card v-if="objective" title="Consumo">
-                    <Badge color="primary">{{ objective.spent_cents ?? 0 }} centavos gastos</Badge>
+                    <Badge color="primary">{{ formatUsdMicroCents(objective.spent_micro_cents ?? 0) }} gastos</Badge>
                 </Card>
             </div>
         </div>

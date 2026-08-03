@@ -31,9 +31,9 @@ class DashboardController extends Controller
                 'messages_today' => Message::query()->whereDate('created_at', today())->count(),
                 'contacts' => Contact::query()->count(),
                 'connections_online' => ChannelConnection::query()->connected()->count(),
-                'ai_cost_month_cents' => (int) AiInteraction::query()
+                'ai_cost_month_micro_cents' => (int) AiInteraction::query()
                     ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
-                    ->sum('cost_cents'),
+                    ->sum('cost_micro_cents'),
             ],
             'by_section' => $this->bySection(),
             'trend' => $this->trend(),

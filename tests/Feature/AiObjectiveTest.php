@@ -15,6 +15,7 @@ use App\Models\AiObjective;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\ServiceQueue;
+use App\Services\Ai\AiCostCalculator;
 use App\Services\Ai\AiManager;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -76,7 +77,7 @@ it('answers the contact and records the interaction cost', function (): void {
     expect($reply)->not->toBeNull()
         ->and($reply->body)->toBe('Claro, posso ajudar!')
         ->and(AiInteraction::query()->count())->toBe(1)
-        ->and(AiInteraction::query()->first()->cost_cents)->toBeGreaterThan(0);
+        ->and(AiInteraction::query()->first()->cost_micro_cents)->toBeGreaterThan(0);
 });
 
 it('sends the objective prompt and parameters to the provider', function (): void {
@@ -253,7 +254,7 @@ it('stops answering when the objective runs out of budget', function (): void {
     AiInteraction::factory()->create([
         'conversation_id' => $conversation->id,
         'ai_objective_id' => $conversation->ai_objective_id,
-        'cost_cents' => 50,
+        'cost_micro_cents' => 50 * AiCostCalculator::MICRO_CENTS_PER_CENT,
     ]);
 
     app(HandleAiTurn::class)->handle($conversation);
@@ -275,7 +276,7 @@ it('stops answering after the configured number of turns', function (): void {
     AiInteraction::factory()->count(2)->create([
         'conversation_id' => $conversation->id,
         'ai_objective_id' => $conversation->ai_objective_id,
-        'cost_cents' => 1,
+        'cost_micro_cents' => AiCostCalculator::MICRO_CENTS_PER_CENT,
     ]);
 
     app(HandleAiTurn::class)->handle($conversation);

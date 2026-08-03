@@ -32,7 +32,7 @@ class AiObjectiveResource extends JsonResource
             'handoff_service_queue_id' => $this->handoff_service_queue_id,
             'closing_condition' => $this->closing_condition,
             'is_active' => $this->is_active,
-            'spent_cents' => $this->when($request->routeIs('ai-objectives.*'), fn (): int => $this->spentCents()),
+            'spent_micro_cents' => $this->when($request->routeIs('ai-objectives.*'), fn (): int => $this->spentMicroCents()),
         ];
     }
 }

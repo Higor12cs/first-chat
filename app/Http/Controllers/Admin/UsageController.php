@@ -38,7 +38,7 @@ class UsageController extends Controller
                 'input_tokens' => (int) ($ai[$tenant->id]['input_tokens'] ?? 0),
                 'output_tokens' => (int) ($ai[$tenant->id]['output_tokens'] ?? 0),
                 'ai_interactions' => (int) ($ai[$tenant->id]['interactions'] ?? 0),
-                'ai_cost_cents' => (int) ($ai[$tenant->id]['cost_cents'] ?? 0),
+                'ai_cost_micro_cents' => (int) ($ai[$tenant->id]['cost_micro_cents'] ?? 0),
                 'max_monthly_ai_cost_cents' => $tenant->limit('max_monthly_ai_cost_cents'),
                 'conversations' => (int) ($conversations[$tenant->id] ?? 0),
             ])
@@ -52,7 +52,7 @@ class UsageController extends Controller
                 'messages_out' => $rows->sum('messages_out'),
                 'input_tokens' => $rows->sum('input_tokens'),
                 'output_tokens' => $rows->sum('output_tokens'),
-                'ai_cost_cents' => $rows->sum('ai_cost_cents'),
+                'ai_cost_micro_cents' => $rows->sum('ai_cost_micro_cents'),
                 'conversations' => $rows->sum('conversations'),
             ],
         ]);
@@ -78,14 +78,14 @@ class UsageController extends Controller
     }
 
     /**
-     * @return array<string, array{input_tokens: int, output_tokens: int, cost_cents: int, interactions: int}>
+     * @return array<string, array{input_tokens: int, output_tokens: int, cost_micro_cents: int, interactions: int}>
      */
     private function aiTotals(Carbon $from, Carbon $to): array
     {
         return AiInteraction::query()
             ->acrossTenants()
             ->whereBetween('created_at', [$from, $to])
-            ->selectRaw('tenant_id, count(*) as interactions, sum(input_tokens) as input_tokens, sum(output_tokens) as output_tokens, sum(cost_cents) as cost_cents')
+            ->selectRaw('tenant_id, count(*) as interactions, sum(input_tokens) as input_tokens, sum(output_tokens) as output_tokens, sum(cost_micro_cents) as cost_micro_cents')
             ->groupBy('tenant_id')
             ->get()
             ->keyBy('tenant_id')
@@ -93,7 +93,7 @@ class UsageController extends Controller
                 'interactions' => (int) $row->interactions,
                 'input_tokens' => (int) $row->input_tokens,
                 'output_tokens' => (int) $row->output_tokens,
-                'cost_cents' => (int) $row->cost_cents,
+                'cost_micro_cents' => (int) $row->cost_micro_cents,
             ])
             ->all();
     }

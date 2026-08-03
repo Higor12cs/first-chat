@@ -7,7 +7,7 @@ import Chart from "../../Components/UI/Chart.vue";
 import TextInput from "../../Components/UI/TextInput.vue";
 import FormField from "../../Components/UI/FormField.vue";
 import EmptyState from "../../Components/UI/EmptyState.vue";
-import { formatUsdCents } from "../../Utils/format";
+import { formatUsdMicroCents } from "../../Utils/format";
 
 const props = defineProps({
     summary: { type: Object, required: true },
@@ -25,7 +25,7 @@ const cards = computed(() => [
     { label: "Atendimentos Encerrados", value: props.summary.closed },
     { label: "Mensagens Recebidas", value: props.summary.messages_in },
     { label: "Mensagens Enviadas", value: props.summary.messages_out },
-    { label: "Custo de IA", value: formatUsdCents(props.summary.ai_cost_cents) },
+    { label: "Custo de IA", value: formatUsdMicroCents(props.summary.ai_cost_micro_cents) },
     { label: "1ª Resposta (min)", value: props.summary.first_response_minutes },
 ]);
 

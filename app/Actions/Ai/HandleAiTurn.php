@@ -342,7 +342,7 @@ class HandleAiTurn
             'status' => $status,
             'input_tokens' => $inputTokens,
             'output_tokens' => $outputTokens,
-            'cost_cents' => $this->costs->cents($objective->model, $inputTokens, $outputTokens),
+            'cost_micro_cents' => $this->costs->microCents($objective->model, $inputTokens, $outputTokens),
             'latency_ms' => (int) ((hrtime(true) - $startedAt) / 1_000_000),
             'error' => $error,
         ]);

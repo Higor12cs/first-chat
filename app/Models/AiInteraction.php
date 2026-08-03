@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'status',
     'input_tokens',
     'output_tokens',
-    'cost_cents',
+    'cost_micro_cents',
     'latency_ms',
     'error',
     'metadata',
