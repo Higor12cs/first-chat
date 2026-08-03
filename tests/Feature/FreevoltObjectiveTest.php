@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Ai\Tools\ApplyTagTool;
+use App\Domain\Ai\Tools\TransferToQueueTool;
 use App\Models\AiObjective;
 use App\Models\ServiceQueue;
 use App\Models\Tag;
@@ -19,18 +20,26 @@ it('runs the sdr on a model that reliably calls its tools', function (): void {
         ->and(config('ai.pricing'))->toHaveKey('gpt-5.4-mini');
 });
 
-it('grants the sdr every tool its instructions name', function (): void {
+it('grants the sdr every tool the business prompt asks it to use', function (): void {
     expect($this->objective->tools)
         ->toEqualCanonicalizing(['qualify_lead', 'transfer_to_queue', 'apply_tag', 'add_note', 'close_conversation']);
+});
 
-    foreach (['qualify_lead', 'transfer_to_queue', 'apply_tag', 'add_note', 'close_conversation'] as $tool) {
-        expect($this->objective->system_prompt)->toContain($tool);
+it('keeps system mechanics out of the business prompt', function (): void {
+    $mechanics = [
+        'qualify_lead', 'transfer_to_queue', 'apply_tag', 'add_note', 'close_conversation',
+        'queue_slug', 'tag_slug', 'markdown', 'ferramenta',
+    ];
+
+    foreach ($mechanics as $term) {
+        expect($this->objective->system_prompt)->not->toContain($term);
     }
 });
 
 it('points the transfer at a queue that exists', function (): void {
-    expect($this->objective->system_prompt)->toContain('queue_slug "comercial"')
-        ->and(ServiceQueue::query()->where('slug', 'comercial')->exists())->toBeTrue();
+    expect(ServiceQueue::query()->where('slug', 'comercial')->exists())->toBeTrue()
+        ->and(app(TransferToQueueTool::class)->schema()['properties']['queue_slug']['enum'])
+        ->toContain('comercial');
 });
 
 it('leaves the tag catalog to the platform instead of hardcoding it in the prompt', function (): void {
@@ -46,8 +55,10 @@ it('leaves the tag catalog to the platform instead of hardcoding it in the promp
     }
 });
 
-it('tells the sdr that announcing a close does not close anything', function (): void {
-    expect($this->objective->system_prompt)->toContain('Dizer que vai encerrar não encerra');
+it('states the business rule for closing without naming the tool', function (): void {
+    expect($this->objective->system_prompt)
+        ->toContain('Fora desses casos, nunca encerre')
+        ->toContain('Dúvida sobre o produto é motivo para explicar');
 });
 
 it('keeps the sdr from interrogating the contact before helping', function (): void {
