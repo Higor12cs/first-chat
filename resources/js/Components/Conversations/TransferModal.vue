@@ -187,7 +187,7 @@ function submit() {
                     <SelectInput
                         v-model="form.service_queue_id"
                         :options="queueOptions"
-                        placeholder="Escolha um setor"
+                        placeholder="Escolha um Setor"
                     />
                 </FormField>
 
@@ -200,7 +200,7 @@ function submit() {
                     <SelectInput
                         v-model="form.user_id"
                         :options="agentOptions"
-                        placeholder="Escolha um usuário"
+                        placeholder="Escolha um Usuário"
                     />
                 </FormField>
             </template>
@@ -214,7 +214,7 @@ function submit() {
                     <SelectInput
                         v-model="form.chat_flow_id"
                         :options="flowOptions"
-                        placeholder="Escolha um chatbot"
+                        placeholder="Escolha um ChatBot"
                     />
                 </FormField>
 
@@ -227,7 +227,7 @@ function submit() {
                     <SelectInput
                         v-model="form.node_id"
                         :options="levelOptions"
-                        placeholder="Escolha um nível"
+                        placeholder="Escolha um Nível"
                     />
                 </FormField>
             </template>

@@ -256,7 +256,7 @@ usePrivateChannel(
                     <SelectInput
                         v-model="form.default_service_queue_id"
                         :options="queueOptions"
-                        placeholder="Sem setor"
+                        placeholder="Sem Setor"
                     />
                 </FormField>
 
@@ -267,12 +267,12 @@ usePrivateChannel(
                     <SelectInput
                         v-model="form.chat_flow_id"
                         :options="flowOptions"
-                        placeholder="Sem fluxo"
+                        placeholder="Sem Fluxo"
                     />
                 </FormField>
             </div>
 
-            <Toggle v-model="form.is_active" label="Conexão ativa" />
+            <Toggle v-model="form.is_active" label="Conexão Ativa" />
         </form>
 
         <template #footer>

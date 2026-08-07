@@ -289,7 +289,7 @@ function removeOption(index) {
                 <SelectInput
                     :model-value="node.data?.service_queue_id ?? null"
                     :options="queueOptions"
-                    placeholder="Escolha um setor"
+                    placeholder="Escolha um Setor"
                     @update:model-value="set('service_queue_id', $event)"
                 />
             </FormField>

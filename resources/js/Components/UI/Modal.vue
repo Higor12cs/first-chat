@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
         >
             <div
                 v-if="open"
-                class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-8"
+                class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-8 shadow-xl"
             >
                 <div
                     class="fixed inset-0 bg-overlay backdrop-blur-[2px]"
